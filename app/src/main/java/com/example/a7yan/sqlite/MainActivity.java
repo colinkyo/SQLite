@@ -13,6 +13,8 @@ import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView lv;
     private List<String> list;
     private ArrayAdapter<String> adapter;
+    private SimpleCursorAdapter scadapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,15 @@ public class MainActivity extends AppCompatActivity {
         name.setText("暂无数据");
         nickname = (EditText) findViewById(R.id.nickname);
         lv = (ListView) findViewById(R.id.lv);
+        scadapter =new SimpleCursorAdapter(this,
+                R.layout.list_user,
+                null,
+                new String[]{"name","nickname"},
+                new int[]{R.id.tv_name,R.id.tv_nickname},
+                SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+                );
+        lv.setAdapter(scadapter);
+
 
         DBHelper helper = new DBHelper(this);
         //需要调用以下两个方法之一，才能创建数据库和表出来
@@ -43,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         //SQLiteDatabase readdb=helper.getReadableDatabase();
         db=helper.getWritableDatabase();
         //初始化listview
-        LoadData();
+        //LoadData();
     }
 
     private void LoadData()
@@ -99,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public  void  query(View view)
     {
-        String nicknamev=nickname.getText().toString().trim();
+        /*String nicknamev=nickname.getText().toString().trim();
         if(TextUtils.isEmpty(nicknamev))
         {
             Toast.makeText(this, "添加数据前请把名称和昵称填完.", Toast.LENGTH_SHORT).show();
@@ -116,7 +128,11 @@ public class MainActivity extends AppCompatActivity {
         }
         if(i==0){
             Toast.makeText(this, "数据库没有数据", Toast.LENGTH_SHORT).show();
-        }
+        }*/
+
+        Cursor cursor=db.query("person",null,"",new  String[]{},null,null,null);
+        scadapter.swapCursor(cursor);
+        scadapter.notifyDataSetChanged();
     }
     public  void  update(View view)
     {
